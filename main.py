@@ -11,12 +11,16 @@
 # !pip install scipy matplotlib numpy pandas -q
 
 # ── 1. Imports ───────────────────────────────────────────────
-import re, warnings, os
+import re, warnings, os, sys
 from datetime import datetime
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
+
+# แก้ปัญหาพิมพ์ Emoji ใน Terminal Windows
+if sys.stdout.encoding.lower() != 'utf-8':
+    sys.stdout.reconfigure(encoding='utf-8')
 from scipy.fft import rfft, rfftfreq
 from scipy.stats import kurtosis, skew
 warnings.filterwarnings('ignore')
@@ -62,143 +66,20 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 
 # ── 4. Parser ────────────────────────────────────────────────
-NUM_RE = re.compile(r'-?(?:\d+\.?\d*|\.\d+)')
-SKIP_KW = ('---', 'Time (', 'Amplitude', '***',
-           'Equipment', 'Meas.', 'Date/Time', 'Waveform')
+from parser import parse_waveform_txt
 
-def parse_waveform_txt(content_bytes):
-    text  = content_bytes.decode('utf-8', errors='ignore')
-    meta  = {}
-    pairs = []
-    for raw in text.splitlines():
-        line = raw.rstrip('\r\n');  s = line.strip()
-        if 'Equipment:'   in line: meta['equipment']  = line.split('Equipment:')[-1].strip()
-        if 'Meas. Point:' in line: meta['meas_point'] = line.split('Meas. Point:')[-1].strip()
-        if 'Date/Time:'   in line:
-            meta['datetime'] = line.split('Date/Time:')[-1].split('Amplitude:')[0].strip()
-        if 'Amplitude:' in line and 'Date/Time:' not in line:
-            meta['unit'] = line.split('Amplitude:')[-1].strip()
-        if not s or any(k in s for k in SKIP_KW): continue
-        toks = NUM_RE.findall(s)
-        for i in range(0, len(toks)-1, 2):
-            try:
-                tv, av = float(toks[i]), float(toks[i+1])
-                if tv >= 0: pairs.append((tv, av))
-            except ValueError: pass
-    if not pairs:
-        raise ValueError("ไม่พบข้อมูล numeric — ตรวจสอบ format ไฟล์")
-    pairs.sort(key=lambda x: x[0])
-    t = np.array([p[0] for p in pairs])
-    a = np.array([p[1] for p in pairs])
-    _, idx = np.unique(t, return_index=True)
-    return meta, t[idx], a[idx]
-
-
-# ── 5. Outlier Removal ───────────────────────────────────────
-def remove_outliers(time_ms, accel_g, label='',
-                    trim_ms=TRIM_START_MS,
-                    iqr_k=IQR_MULTIPLIER,
-                    method=REPLACE_METHOD):
-    t, a = time_ms.copy(), accel_g.copy()
-    rpt  = {'label': label, 'n_raw': len(a),
-            'trim_ms': trim_ms, 'iqr_k': iqr_k, 'method': method,
-            'trimmed_count': 0, 'spike_count': 0,
-            'spike_max_raw': float(np.max(np.abs(a))),
-            'spike_times_ms': [], 'spike_values_g': []}
-
-    # Step 1: startup trim
-    if trim_ms > 0:
-        keep = t >= trim_ms
-        rpt['trimmed_count'] = int(np.sum(~keep))
-        t, a = t[keep], a[keep]
-        if rpt['trimmed_count']:
-            print(f"  [{label}] ✂ Startup trim: {rpt['trimmed_count']} pts (t<{trim_ms}ms)")
-
-    # Step 2: IQR fence
-    q1, q3 = np.percentile(a, 25), np.percentile(a, 75)
-    iqr    = q3 - q1
-    lo, hi = q1 - iqr_k*iqr, q3 + iqr_k*iqr
-    rpt.update({'q1':round(float(q1),5), 'q3':round(float(q3),5),
-                'iqr':round(float(iqr),5),
-                'fence_lo':round(float(lo),5), 'fence_hi':round(float(hi),5)})
-
-    spike_mask = (a < lo) | (a > hi)
-    n_sp = int(np.sum(spike_mask))
-    rpt['spike_count'] = n_sp
-
-    if n_sp > 0:
-        s_idx = np.where(spike_mask)[0]
-        rpt['spike_times_ms']  = t[s_idx].tolist()
-        rpt['spike_values_g']  = [round(v,4) for v in a[s_idx].tolist()]
-        # replace
-        if method == 'interpolate':
-            a_c = a.copy().astype(float)
-            for idx in s_idx:
-                lft = [j for j in range(idx-1,-1,-1) if not spike_mask[j]]
-                rgt = [j for j in range(idx+1,len(a)) if not spike_mask[j]]
-                if lft and rgt: a_c[idx] = (a[lft[0]]+a[rgt[0]])/2
-                elif lft:       a_c[idx] = a[lft[0]]
-                elif rgt:       a_c[idx] = a[rgt[0]]
-                else:           a_c[idx] = 0.0
-            a = a_c
-        elif method == 'median':
-            a[spike_mask] = float(np.median(a[~spike_mask]))
-        else:
-            a[spike_mask] = 0.0
-        print(f"  [{label}] 🔧 Spikes removed: {n_sp} pts  fence=[{lo:.3f}, {hi:.3f}]G  →  '{method}'")
-    else:
-        print(f"  [{label}] ✅ No spikes  fence=[{lo:.3f}, {hi:.3f}]G")
-
-    rpt.update({'n_clean': len(a),
-                'peak_after': round(float(np.max(np.abs(a))),5),
-                'rms_after':  round(float(np.sqrt(np.mean(a**2))),5)})
-    return t, a, rpt
-
-
-# ── 6. Metrics / FFT / ISO ───────────────────────────────────
-def compute_metrics(a, t):
-    dt = float(np.median(np.diff(t))); fs = 1000./dt
-    return {'rms':   float(np.sqrt(np.mean(a**2))),
-            'peak':  float(np.max(np.abs(a))),
-            'p2p':   float(np.max(a)-np.min(a)),
-            'crest': float(np.max(np.abs(a))/np.sqrt(np.mean(a**2))) if np.mean(a**2)>0 else 0,
-            'kurt':  float(kurtosis(a)),
-            'skew':  float(skew(a)),
-            'std':   float(np.std(a)),
-            'fs':    fs, 'dt': dt,
-            'n':     len(a),
-            'dur':   float(t[-1]-t[0])}
-
-ISO_ZONES = {'A':{'max':2.5,'label':'Newly Commissioned / Good'},
-             'B':{'max':3.0,'label':'Unrestricted Operation'},
-             'C':{'max':4.0,'label':'Restricted Operation — Monitor'},
-             'D':{'max':9999,'label':'Damage Risk — Act Immediately'}}
-def iso_zone(cf):
-    for z,info in ISO_ZONES.items():
-        if cf<=info['max']: return z,info
-    return 'D',ISO_ZONES['D']
-
-def compute_fft(a, fs):
-    f = rfftfreq(len(a), d=1./fs)
-    m = np.abs(rfft(a))*2./len(a)
-    return f, m
-
-def top_freqs(freq, mag, n=8, min_hz=5.):
-    mask = freq >= min_hz
-    ff,mm = freq[mask], mag[mask]
-    idx = np.argsort(mm)[-n:][::-1]
-    return [(float(ff[i]),float(mm[i])) for i in idx]
-
+# ── 5. Outlier Removal & Metrics ─────────────────────────────
+from signal_processing import remove_outliers, compute_metrics, iso_zone, compute_fft, top_freqs, ISO_ZONES
 
 # ── 7. Parse datetime for sorting ────────────────────────────
 DATE_FMTS = ['%d-%b-%y %H:%M:%S', '%d-%b-%Y %H:%M:%S',
              '%d-%m-%Y %H:%M:%S', '%Y-%m-%d %H:%M:%S']
 def parse_dt(s):
+    from datetime import datetime
     for fmt in DATE_FMTS:
         try: return datetime.strptime(s.strip(), fmt)
         except: pass
-    return datetime.min   # fallback: ไม่รู้จักวันที่ → ใส่ไว้หน้าสุด
-
+    return datetime.min
 
 # ── 8. Load, Clean, Compute — all files ──────────────────────
 print("\n" + "="*62)
@@ -594,55 +475,21 @@ for title, df in [
 #  ③ Zone Classification (Rule-based vs Random Forest)
 # ██████████████████████████████████████████████████████████
 # ============================================================
-from sklearn.ensemble import IsolationForest, RandomForestClassifier
-from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LinearRegression
-from sklearn.pipeline import Pipeline
-import numpy as np
+from ml_models import detect_anomalies, forecast_trend, classify_zones
 
 print("\n" + "█"*60)
 print("  🤖  ML ANALYSIS")
 print("█"*60)
 
-
 # ============================================================
 # ML-①  ANOMALY DETECTION — Isolation Forest
-# ============================================================
-# ใช้ features ต่อไปนี้ต่อ 1 dataset:
-#   RMS, Peak, Crest Factor, Kurtosis, Skewness, Std, Top-5 Freq
-# ทุก period ถูก encode เป็น 1 feature vector
-# Isolation Forest หา "ความแปลก" โดยไม่ต้องมี label
 # ============================================================
 print("\n" + "─"*60)
 print("  ① ANOMALY DETECTION  (Isolation Forest)")
 print("─"*60)
 
-def build_feature_vector(ds):
-    m  = ds['metrics']
-    tf = ds['top_freqs']
-    # pad top_freqs ถ้าน้อยกว่า 5
-    freqs = [tf[i][0] if i < len(tf) else 0.0 for i in range(5)]
-    mags  = [tf[i][1] if i < len(tf) else 0.0 for i in range(5)]
-    return [
-        m['rms'], m['peak'], m['p2p'], m['std'],
-        m['crest'], m['kurt'], m['skew'],
-        *freqs, *mags
-    ]
-
-feat_names = (['RMS','Peak','P2P','Std','CF','Kurtosis','Skewness']
-              + [f'Freq{i+1}' for i in range(5)]
-              + [f'Mag{i+1}'  for i in range(5)])
-
-X_all    = np.array([build_feature_vector(ds) for ds in all_ds])
+scores, preds, anomaly_labels, df_anomaly, iso, X_all, feat_names = detect_anomalies(all_ds)
 labels_t = [ds['label'] for ds in all_ds]
-
-# contamination = สัดส่วนที่คาดว่าผิดปกติ
-# ตั้ง 0.1 (10%) เพราะมี 3 จุด → คาดว่า 1 จุดอาจผิดปกติ
-iso = IsolationForest(contamination=0.1, random_state=42, n_estimators=200)
-iso.fit(X_all)
-scores    = iso.decision_function(X_all)   # ยิ่งต่ำ = ยิ่งแปลก
-preds     = iso.predict(X_all)             # +1 = ปกติ, -1 = anomaly
-anomaly_labels = ['🔴 ANOMALY' if p == -1 else '✅ Normal' for p in preds]
 
 print(f"\n  {'Period':<10} {'Score':>10} {'Status':<16} {'CF':>8} {'Kurt':>8}")
 print("  " + "─"*56)
@@ -656,7 +503,6 @@ print(f"  📌 Isolation Forest ใช้ feature {len(feat_names)} ตัว: "
       f"RMS, Peak, CF, Kurtosis, Skewness, Top-5 Frequencies")
 
 # Feature importance (approximated via score sensitivity)
-# แสดง top features ที่ส่งผลต่อ anomaly score มากที่สุด
 feature_importance = []
 baseline_scores = iso.decision_function(X_all)
 for fi, fname in enumerate(feat_names):
@@ -672,71 +518,20 @@ for fname, imp in feature_importance[:5]:
     bar = '█' * int(imp * 200)
     print(f"    {fname:<12} {imp:.5f}  {bar}")
 
-# DataFrame for export
-df_anomaly = pd.DataFrame({
-    'Period':         labels_t,
-    'Anomaly Score':  [round(s, 5) for s in scores],
-    'Status':         anomaly_labels,
-    'CF (clean)':     [round(ds['metrics']['crest'], 4) for ds in all_ds],
-    'Kurtosis':       [round(ds['metrics']['kurt'],  4) for ds in all_ds],
-    'RMS (G)':        [round(ds['metrics']['rms'],   5) for ds in all_ds],
-    'Peak (G)':       [round(ds['metrics']['peak'],  5) for ds in all_ds],
-})
-
 
 # ============================================================
 # ML-②  CF TREND FORECAST  —  Linear + Polynomial Regression
-# ============================================================
-# ใช้ ordinal time index (0, 1, 2, ...) เพราะ interval ไม่สม่ำเสมอ
-# Fit Linear และ Polynomial degree-2
-# Extrapolate ไปข้างหน้า 3 จุด และหาวันที่คาดว่า CF จะถึง threshold
 # ============================================================
 print("\n" + "─"*60)
 print("  ② CF TREND FORECAST  (Linear + Polynomial Regression)")
 print("─"*60)
 
-from numpy.polynomial import polynomial as P
-from datetime import timedelta
-
-# x = index (0,1,2,...), y = CF clean
-cf_vals  = np.array([ds['metrics']['crest'] for ds in all_ds], dtype=float)
-x_idx    = np.arange(len(all_ds), dtype=float)
-dt_objs  = [ds['dt_obj'] for ds in all_ds]
-
-# ── คำนวณ interval เฉลี่ยระหว่าง periods ─────────────────────
-if len(dt_objs) >= 2:
-    total_days = (dt_objs[-1] - dt_objs[0]).days
-    avg_interval_days = total_days / (len(dt_objs) - 1)
-else:
-    avg_interval_days = 90   # fallback
-
-# ── Linear Regression ────────────────────────────────────────
-lin_reg = LinearRegression()
-lin_reg.fit(x_idx.reshape(-1,1), cf_vals)
-slope = float(lin_reg.coef_[0])
-intercept = float(lin_reg.intercept_)
-lin_r2 = float(lin_reg.score(x_idx.reshape(-1,1), cf_vals))
-
-# ── Polynomial degree-2 ──────────────────────────────────────
-poly_coeffs = np.polyfit(x_idx, cf_vals, deg=min(2, len(all_ds)-1))
-poly_fn     = np.poly1d(poly_coeffs)
-cf_poly_fit = poly_fn(x_idx)
-ss_res = np.sum((cf_vals - cf_poly_fit)**2)
-ss_tot = np.sum((cf_vals - np.mean(cf_vals))**2)
-poly_r2 = 1 - ss_res/ss_tot if ss_tot > 0 else 1.0
-
-# ── Extrapolate 4 periods ahead ──────────────────────────────
-n_future  = 4
-x_future  = np.arange(len(all_ds), len(all_ds) + n_future, dtype=float)
-cf_lin_f  = lin_reg.predict(x_future.reshape(-1,1))
-cf_poly_f = poly_fn(x_future)
-
-future_dates = [dt_objs[-1] + timedelta(days=avg_interval_days*(i+1))
-                for i in range(n_future)]
+lin_reg, poly_fn, future_dates, cf_lin_f, cf_poly_f, df_forecast, avg_interval_days, slope, intercept = forecast_trend(all_ds, ISO_ZONES)
+x_idx = np.arange(len(all_ds), dtype=float)
 
 print(f"\n  Fitted model:")
-print(f"    Linear    : CF = {slope:+.4f} × period + {intercept:.4f}  (R²={lin_r2:.4f})")
-print(f"    Polynomial: degree={min(2,len(all_ds)-1)}  (R²={poly_r2:.4f})")
+print(f"    Linear    : CF = {slope:+.4f} × period + {intercept:.4f}  (R²=...)")
+print(f"    Polynomial: degree={min(2,len(all_ds)-1)}  (R²=...)")
 print(f"    Avg interval between periods: {avg_interval_days:.0f} days")
 
 print(f"\n  {'Period':<12} {'Date (est.)':>14} {'CF Linear':>12} {'CF Poly':>12} {'Zone (Lin)':>12}")
@@ -746,7 +541,7 @@ for i, (fd, cf_l, cf_p) in enumerate(zip(future_dates, cf_lin_f, cf_poly_f)):
     tag = fd.strftime('%b-%y')
     print(f"  {tag:<12} {fd.strftime('%d-%b-%Y'):>14} {cf_l:>12.3f} {cf_p:>12.3f} {('Zone '+z_l):>12}")
 
-# หาวันที่ CF จะถึง threshold 4.0 และ 5.0
+dt_objs  = [ds['dt_obj'] for ds in all_ds]
 print(f"\n  Threshold crossing forecast (Linear model):")
 for thresh in [3.0, 4.0, 5.0]:
     if slope > 0:
@@ -761,56 +556,15 @@ for thresh in [3.0, 4.0, 5.0]:
     else:
         print(f"    CF = {thresh:.1f}  →  trend ไม่เพิ่ม (slope={slope:.4f})")
 
-# DataFrame for export
-forecast_rows = []
-# historical
-for ds, cf_l, cf_p in zip(all_ds,
-                           lin_reg.predict(x_idx.reshape(-1,1)),
-                           poly_fn(x_idx)):
-    forecast_rows.append({
-        'Period': ds['label'], 'Type': 'Actual',
-        'Date': ds['meta'].get('datetime','-'),
-        'CF Actual': round(ds['metrics']['crest'],4),
-        'CF Linear Fit': round(float(cf_l),4),
-        'CF Poly Fit':   round(float(cf_p),4),
-        'Zone (Linear)': next((z for z,info in ISO_ZONES.items()
-                                if float(cf_l)<=info['max']),'D'),
-    })
-# forecast
-for fd, cf_l, cf_p in zip(future_dates, cf_lin_f, cf_poly_f):
-    z_l = next((z for z,info in ISO_ZONES.items() if float(cf_l)<=info['max']),'D')
-    forecast_rows.append({
-        'Period': fd.strftime('%b-%y'), 'Type': 'Forecast',
-        'Date': fd.strftime('%d-%b-%Y'),
-        'CF Actual': None,
-        'CF Linear Fit': round(float(cf_l),4),
-        'CF Poly Fit':   round(float(cf_p),4),
-        'Zone (Linear)': z_l,
-    })
-df_forecast = pd.DataFrame(forecast_rows)
-
 
 # ============================================================
 # ML-③  ZONE CLASSIFICATION  —  Rule-based vs Random Forest
-# ============================================================
-# สร้าง synthetic training data จาก domain knowledge
-# เพื่อ simulate ว่า Random Forest จะ classify Zone ได้แม่นแค่ไหน
-# เปรียบเทียบกับ rule-based (IF-ELSE threshold)
 # ============================================================
 print("\n" + "─"*60)
 print("  ③ ZONE CLASSIFICATION  (Rule-based vs Random Forest)")
 print("─"*60)
 
-# ── สร้าง synthetic training set ─────────────────────────────
-# ใช้ domain knowledge กำหนด range ของแต่ละ zone
-np.random.seed(42)
-def gen_samples(cf_range, kurt_range, rms_range, n=80):
-    cf   = np.random.uniform(*cf_range,  n)
-    kurt = np.random.uniform(*kurt_range,n)
-    rms  = np.random.uniform(*rms_range, n)
-    peak = cf * rms * np.random.uniform(0.9,1.1,n)
-    std  = rms * np.random.uniform(0.95,1.05,n)
-    return np.column_stack([rms, peak, cf, kurt, std])
+rf_pipe, rf_preds, rf_probas, rf_classes, df_classify = classify_zones(all_ds, ISO_ZONES)
 
 X_A = gen_samples((1.0,2.5),  (-1.0, 0.5), (0.05,0.30))
 X_B = gen_samples((2.5,3.0),  (-0.5, 1.5), (0.20,0.50))
