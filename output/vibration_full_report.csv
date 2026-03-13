@@ -1,0 +1,90 @@
+﻿=== 1. VIBRATION METRICS (clean) ===
+Period,Date/Time,Equipment,Meas. Point,N Raw,Startup Trimmed,Spikes Removed,N Clean,Fence Low (G),Fence High (G),RMS raw (G),RMS clean (G),Peak raw (G),Peak clean (G),Peak-to-Peak (G),Std Dev (G),CF raw,CF clean,Kurtosis raw,Kurtosis clean,Skewness,Fs (Hz),dt (ms),Duration (ms),ISO Zone,Zone Description
+Jun-24,28-Jun-24 08:56:47,Motor Compressor OAH-06_A,CH-06-A   -NAA  -->  Motor Outboard Axials,4096,8,1,4088,-3.00525,3.0,0.27921,0.26341,5.9,0.966,1.823,0.26341,21.1307,3.6673,47.9729,-0.045,0.0338,10000.0,0.1,532.158,C,Restricted Operation — Monitor
+Sep-24,04-Sep-24 10:26:52,(CHPP) Motor Compressor CH-06_A,CH-06-A   -NAA  -->  Motor Outboard Axial,4091,10,3,4081,-2.761,2.764,10.52473,0.23443,525.0,0.786,1.512,0.23443,49.8825,3.3528,2134.2915,-0.1505,0.0134,10000.0,0.1,532.158,C,Restricted Operation — Monitor
+Oct-24,16-Oct-24 12:12:21,Motor Compressor OAH-06_A,CH-06-A   -NAA  -->  Motor Outboard Axial,4096,8,0,4088,-2.824,2.82,0.25326,0.25311,1.086,1.086,2.002,0.25311,4.288,4.2907,0.2128,0.2188,0.0049,10000.0,0.1,532.158,D,Damage Risk — Act Immediately
+
+=== 2. TREND (all periods) ===
+Parameter,Jun-24,Sep-24,Oct-24,Delta (first→last),Delta % (first→last),Flag
+RMS (G),0.2634,0.2344,0.2531,-0.0103,-3.91,
+Peak (G),0.966,0.786,1.086,0.12,12.42,
+P2P (G),1.823,1.512,2.002,0.179,9.82,
+Std Dev (G),0.2634,0.2344,0.2531,-0.0103,-3.91,
+Crest Factor,3.6673,3.3528,4.2907,0.62341,17.0,🔴 CF>4 — Bearing damage likely
+Kurtosis,-0.045,-0.1505,0.2188,0.26384,586.19,
+Skewness,0.0338,0.0134,0.0049,-0.02892,-85.6,
+
+=== 3. TOP DOMINANT FREQUENCIES ===
+Rank,Jun-24 Freq (Hz),Jun-24 Mag (G),Sep-24 Freq (Hz),Sep-24 Mag (G),Oct-24 Freq (Hz),Oct-24 Mag (G),New in last period
+1,3111.55,0.144408,558.69,0.076061,557.73,0.100279,⚠ New
+2,2712.82,0.128027,3119.33,0.071519,3118.88,0.091515,
+3,3104.21,0.049766,3104.63,0.06797,3067.51,0.08205,⚠ New
+4,4207.44,0.049478,3116.88,0.064022,3106.65,0.079442,
+5,3118.88,0.048772,838.03,0.059888,2715.26,0.071884,
+6,2964.77,0.04847,3065.43,0.055932,3116.44,0.071106,
+7,4801.86,0.045048,3085.03,0.051439,3084.64,0.056087,⚠ New
+8,3101.76,0.043386,642.0,0.048753,640.9,0.054,⚠ New
+
+=== 4. ASSESSMENT SUMMARY ===
+Item,Value,Detail,Flag
+Section,A — Equipment Info,,
+Equipment,Motor Compressor OAH-06_A,,
+Meas. Jun-24,CH-06-A   -NAA  -->  Motor Outboard Axials,,
+Meas. Sep-24,CH-06-A   -NAA  -->  Motor Outboard Axial,,
+Meas. Oct-24,CH-06-A   -NAA  -->  Motor Outboard Axial,,
+Date Jun-24,28-Jun-24 08:56:47,,
+Date Sep-24,04-Sep-24 10:26:52,,
+Date Oct-24,16-Oct-24 12:12:21,,
+Section,B — Key Indicators (latest clean data),,
+Period assessed,Oct-24,,
+RMS (G),0.25311,,
+Peak (G),1.086,,
+CF,4.2907,,🔴 >4.0
+Kurtosis,0.2188,,✓ Normal
+ISO Zone,D,Damage Risk — Act Immediately,
+Section,C — ISO Zone per Period,,
+Zone Jun-24,C,Restricted Operation — Monitor,
+Zone Sep-24,C,Restricted Operation — Monitor,
+Zone Oct-24,D,Damage Risk — Act Immediately,
+Section,D — Top Frequencies (latest period),,
+Top1 Hz,557.73,Mag=0.10028 G,
+Top2 Hz,3118.88,Mag=0.09152 G,
+Top3 Hz,3067.51,Mag=0.08205 G,
+Top4 Hz,3106.65,Mag=0.07944 G,
+Top5 Hz,2715.26,Mag=0.07188 G,
+Section,E — Recommendations,,
+Overall Condition,URGENT — Plan Bearing Replacement immediately,,
+Monitoring Interval,Weekly,,
+Action 1,Measure Velocity (mm/s) for direct ISO 10816-3 comparison,,
+Action 2,Perform Envelope Analysis for Bearing defect frequency,,
+Action 3,Calculate BPFO / BPFI / BSF to confirm bearing fault,,
+Action 4,Check bearing temperature and lubrication,,
+Action 5,If CF >4.0 at next measurement: execute Bearing Replacement,,
+
+=== 5. OUTLIER REMOVAL DETAIL ===
+Period,N Raw,Startup Trim (pts),Spikes Removed,N Clean,IQR k,Q1 (G),Q3 (G),IQR (G),Fence Low (G),Fence High (G),Peak Raw (G),Peak After (G),Replace Method,Spike Times (ms),Spike Values (G)
+Jun-24,4096,8,1,4088,8.0,-0.17925,0.174,0.35325,-3.00525,3.0,5.9,0.966,interpolate,[463.9],[5.9]
+Sep-24,4091,10,3,4081,8.0,-0.161,0.164,0.325,-2.761,2.764,525.0,0.786,interpolate,"[125.0, 135.7, 154.3]","[4.8, 4.8, 4.8]"
+Oct-24,4096,8,0,4088,8.0,-0.168,0.164,0.332,-2.824,2.82,1.086,1.086,interpolate,[],[]
+
+=== 6. ANOMALY DETECTION (Isolation Forest) ===
+Period,Anomaly Score,Status,CF (clean),Kurtosis,RMS (G),Peak (G)
+Jun-24,-0.00584,🔴 ANOMALY,3.6673,-0.045,0.26341,0.966
+Sep-24,0.02336,✅ Normal,3.3528,-0.1505,0.23443,0.786
+Oct-24,0.02979,✅ Normal,4.2907,0.2188,0.25311,1.086
+
+=== 7. CF TREND FORECAST ===
+Period,Type,Date,CF Actual,CF Linear Fit,CF Poly Fit,Zone (Linear)
+Jun-24,Actual,28-Jun-24 08:56:47,3.6673,3.4585,3.6673,C
+Sep-24,Actual,04-Sep-24 10:26:52,3.3528,3.7702,3.3528,C
+Oct-24,Actual,16-Oct-24 12:12:21,4.2907,4.0819,4.2907,D
+Dec-24,Forecast,10-Dec-2024,,4.3936,6.4809,D
+Feb-25,Forecast,03-Feb-2025,,4.7053,9.9236,D
+Mar-25,Forecast,30-Mar-2025,,5.0171,14.6186,D
+May-25,Forecast,24-May-2025,,5.3288,20.566,D
+
+=== 8. ZONE CLASSIFICATION (Random Forest) ===
+Period,Rule Zone,RF Zone,Match,P(Zone A),P(Zone B),P(Zone C),P(Zone D),CF,Kurtosis,RMS
+Jun-24,C,C,Yes,0.0067,0.3967,0.5967,0.0,3.6673,-0.045,0.26341
+Sep-24,C,C,Yes,0.0067,0.42,0.5733,0.0,3.3528,-0.1505,0.23443
+Oct-24,D,D,Yes,0.0067,0.3033,0.26,0.43,4.2907,0.2188,0.25311
