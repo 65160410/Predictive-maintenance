@@ -1,0 +1,87 @@
+# ═══════════════════════════════════════════════════════════════
+# Session 7a — RMS / CF / Kurtosis Trend Forecast
+# ใช้ Linear Regression ทำนายค่าของ period ถัดไป
+# ═══════════════════════════════════════════════════════════════
+from sklearn.linear_model import LinearRegression
+import numpy as np
+
+print("=" * 70)
+print("  📈  TREND FORECAST  (Linear Regression — Next Period Prediction)")
+print("=" * 70)
+
+if len(ds_valid) < 2:
+    print("  ⚠ ต้องการอย่างน้อย 2 period สำหรับ forecast")
+else:
+    n = len(ds_valid)
+    labels = [ds['label'] for ds in ds_valid]
+    x = np.arange(n, dtype=float).reshape(-1, 1)   # [0, 1, 2, ...]
+    x_next = np.array([[n]])                         # period ถัดไป
+
+    # ── เก็บผลทุก metric ────────────────────────────────────────
+    forecast_results = {}
+
+    print(f"\n  {'Metric':<18} ", end="")
+    for lbl in labels:
+        print(f"  {lbl:<10}", end="")
+    print(f"  {'Next (pred)':<12}  {'Δ vs last':<12}  Trend")
+    print("  " + "─" * 74)
+
+    for metric, label_str, unit, warn_thresh in [
+        ('rms',   'RMS',          'G',  None),
+        ('peak',  'Peak',         'G',  None),
+        ('crest', 'Crest Factor', '',   3.0),
+        ('kurt',  'Kurtosis',     '',   3.0),
+    ]:
+        y = np.array([ds['metrics'][metric] for ds in ds_valid])
+        reg = LinearRegression().fit(x, y)
+        slope = float(reg.coef_[0])
+        y_next = float(reg.predict(x_next)[0])
+        y_last = y[-1]
+        delta  = y_next - y_last
+        delta_pct = delta / abs(y_last) * 100 if y_last != 0 else 0
+        arrow  = "↑" if slope > 0.001 else ("↓" if slope < -0.001 else "→")
+
+        # warning
+        warn = ""
+        if warn_thresh and y_next > warn_thresh:
+            warn = "  ⚠"
+        if metric == 'crest' and y_next > 4.0:
+            warn = "  🔴"
+
+        # print row
+        print(f"  {label_str:<18} ", end="")
+        for v in y:
+            print(f"  {v:<10.4f}", end="")
+        print(f"  {y_next:<12.4f}  {delta:+.4f} ({delta_pct:+.1f}%){warn}  {arrow}")
+
+        # store
+        forecast_results[metric] = {
+            'values':    y.tolist(),
+            'predicted': round(y_next, 5),
+            'delta':     round(delta, 5),
+            'delta_pct': round(delta_pct, 2),
+            'slope':     round(slope, 6),
+            'arrow':     arrow,
+            'reg':       reg,
+        }
+
+    # ── ข้อความแปล slope ────────────────────────────────────────
+    print("\n  ── Interpretation ───────────────────────────────────────")
+    rms_f   = forecast_results['rms']
+    cf_f    = forecast_results['crest']
+    kurt_f  = forecast_results['kurt']
+
+    print(f"  RMS คาดว่าจะ {rms_f['arrow']} → {rms_f['predicted']:.4f} G  "
+          f"(slope={rms_f['slope']:+.5f} G/period)")
+    print(f"  CF  คาดว่าจะ {cf_f['arrow']}  → {cf_f['predicted']:.4f}   "
+          f"(slope={cf_f['slope']:+.5f}/period)")
+
+    if cf_f['predicted'] > 4.0:
+        print("  🔴 CF คาดว่าเกิน 4.0 → ความเสี่ยงสูง Zone D")
+    elif cf_f['predicted'] > 3.0:
+        print("  🟡 CF คาดว่าอยู่ระหว่าง 3–4 → Zone C (Restricted)")
+    else:
+        print("  ✅ CF คาดว่าอยู่ในเกณฑ์ปกติ (Zone A/B)")
+
+    # เก็บ forecast_results ไว้ใช้ใน Session 8
+    print("\n  ✅ forecast_results พร้อมใช้ใน Session 8")
