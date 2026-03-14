@@ -1,37 +1,39 @@
 ﻿=== 0. DATA VALIDATION ===
 Period,File,Valid,Peak raw (G),CF raw,Kurt raw,Flat ratio,Removed %,Reason
-Jun-24,A_Cooling Pump OAH 02_M1H_1480_Jun24.txt,No,1296.1,63.9686,4083.9599,0.001,0.1,Peak=1296.1G > 50.0G (sensor overrange?) | CF_raw=64.0 > 30.0 (impulse/fault) | Kurtosis_raw=4084.0 > 500.0 (single impulse?)
-Sep-24,A_Cooling Pump OAH 02_M1H_1480_Sep24.txt,No,1296.1,63.9737,4083.2729,0.0,0.1,Peak=1296.1G > 50.0G (sensor overrange?) | CF_raw=64.0 > 30.0 (impulse/fault) | Kurtosis_raw=4083.3 > 500.0 (single impulse?)
+Jun-24,A_Cooling Pump OAH 02_M1H_1480_Jun24.txt,No,1296.1,63.9686,4083.9599,0.001,0.12,Peak=1296.1G > 50.0G (sensor overrange?) | CF_raw=64.0 > 30.0 (impulse/fault) | Kurtosis_raw=4084.0 > 500.0 (single impulse?)
+Sep-24,A_Cooling Pump OAH 02_M1H_1480_Sep24.txt,No,1296.1,63.9737,4083.2729,0.0,0.12,Peak=1296.1G > 50.0G (sensor overrange?) | CF_raw=64.0 > 30.0 (impulse/fault) | Kurtosis_raw=4083.3 > 500.0 (single impulse?)
 Oct-24,A_Cooling Pump OAH 02_M1H_1480_Oct24.txt,Yes,1.311,2.2131,-1.1545,0.0005,0.07,
 
 === 1. VIBRATION METRICS ===
 Period,Date/Time,Equipment,Meas. Point,N Raw,Startup Trimmed,Spikes Removed,N Clean,Fence Low (G),Fence High (G),RMS raw (G),RMS clean (G),Peak raw (G),Peak clean (G),Peak-to-Peak (G),Std Dev (G),CF raw,CF clean,Kurtosis raw,Kurtosis clean,Skewness,Fs (Hz),dt (ms),Duration (ms),ISO Zone,Zone Description
-Oct-24,16-Oct-24 10:53:12,Cooling Pump for OAH-02,2-COP-02  -M1H  -->  Motor Outboard Horizontal,4096,3,0,4093,-8.844,8.87,0.59237,0.5924,1.311,1.311,2.453,0.5924,2.2131,2.213,-1.1545,-1.1544,-0.0801,2500.0,0.4,1598.428,A,Newly Commissioned / Good
+Jun-24,28-Jun-24 08:19:52,(CHPP) Cooling Pump for OAH-02,2-COP-02  -M1H  -->  Motor Outboard Horizontal,4095,4,1,4091,-1.8265,1.8575,20.26151,0.53866,1296.1,1.179,2.349,0.53866,63.9686,2.1888,4083.9599,-1.1418,-0.0788,2500.0,0.4,1598.428,A,Newly Commissioned / Good
+Sep-24,28-Jun-24 08:19:52,(CHPP) Cooling Pump for ECH-02,2-COP-02  -M1H  -->  Motor Outboard Horizontal,4097,4,1,4093,-2.3305,2.3535,20.25989,0.65005,1296.1,1.298,2.498,0.65005,63.9737,1.9968,4083.2729,-1.2539,-0.0809,2500.0,0.4,1598.428,A,Newly Commissioned / Good
+Oct-24,16-Oct-24 10:53:12,Cooling Pump for OAH-02,2-COP-02  -M1H  -->  Motor Outboard Horizontal,4096,3,0,4093,-2.071,2.097,0.59237,0.5924,1.311,1.311,2.453,0.5924,2.2131,2.213,-1.1545,-1.1544,-0.0801,2500.0,0.4,1598.428,A,Newly Commissioned / Good
 
 === 2. TREND ===
-Parameter,Oct-24,Flag
-RMS (G),0.5924,
-Peak (G),1.311,
-P2P (G),2.453,
-Std Dev (G),0.5924,
-Crest Factor,2.213,
-Kurtosis,-1.1544,
-Skewness,-0.0801,
+Parameter,Jun-24,Sep-24,Oct-24,Delta (first→last),Delta % (first→last),Flag
+RMS (G),0.5387,0.6501,0.5924,0.05375,9.98,
+Peak (G),1.179,1.298,1.311,0.132,11.2,
+P2P (G),2.349,2.498,2.453,0.104,4.43,
+Std Dev (G),0.5387,0.6501,0.5924,0.05375,9.98,
+Crest Factor,2.1888,1.9968,2.213,0.02425,1.11,
+Kurtosis,-1.1418,-1.2539,-1.1544,-0.01262,-1.11,
+Skewness,-0.0788,-0.0809,-0.0801,-0.00129,-1.63,
 
 === 3. TOP FREQUENCIES ===
-Rank,Oct-24 Freq (Hz),Oct-24 Mag (G)
-1,1111.04,0.719974
-2,1110.43,0.22867
-3,1208.77,0.187319
-4,1111.65,0.143393
-5,1208.16,0.093268
-6,1109.82,0.093102
-7,817.86,0.079075
-8,1112.26,0.075227
+Rank,Jun-24 Freq (Hz),Jun-24 Mag (G),Sep-24 Freq (Hz),Sep-24 Mag (G),Oct-24 Freq (Hz),Oct-24 Mag (G),New in last period
+1,1115.25,0.377182,1114.71,0.794096,1111.04,0.719974,
+2,1114.64,0.28192,1115.32,0.236378,1110.43,0.22867,
+3,1115.86,0.275867,1212.44,0.22099,1208.77,0.187319,
+4,1112.81,0.224301,1114.1,0.168421,1111.65,0.143393,
+5,1114.03,0.223304,1115.93,0.086257,1208.16,0.093268,
+6,1113.42,0.213251,1113.49,0.075672,1109.82,0.093102,
+7,1118.31,0.08759,1066.45,0.073334,817.86,0.079075,⚠ New
+8,1213.03,0.086949,821.52,0.067839,1112.26,0.075227,
 
 === 4. OUTLIER DETAIL ===
 Period,Valid,N Raw,Startup Trim,Spikes Removed,N Clean,IQR k,Fence Low,Fence High,Peak Raw (G),Peak After (G),Replace Method
-Jun-24,No,4095,4,0,4091,8.0,-7.813,7.844,1296.1,7.2,interpolate
-Sep-24,No,4097,4,0,4093,8.0,-9.942,9.965,1296.1,7.9,interpolate
-Oct-24,Yes,4096,3,0,4093,8.0,-8.844,8.87,1.311,1.311,interpolate
+Jun-24,No,4095,4,1,4091,1.5,-1.8265,1.8575,1296.1,1.179,interpolate
+Sep-24,No,4097,4,1,4093,1.5,-2.3305,2.3535,1296.1,1.298,interpolate
+Oct-24,Yes,4096,3,0,4093,1.5,-2.071,2.097,1.311,1.311,interpolate
 
