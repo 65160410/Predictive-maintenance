@@ -5,20 +5,18 @@ Sep-24,A_Jockey pump_M1A_2925__Sep24.txt,Yes,1.2,2.6559,-0.184,0.001,1.56,
 Oct-24,A_Jockey pump_M1A_2925__Oct24.txt,Yes,1.224,2.6334,-0.2618,0.0005,1.47,
 
 === 1. VIBRATION METRICS ===
-Period,Date/Time,Equipment,Meas. Point,N Raw,Startup Trimmed,Spikes Removed,N Clean,Fence Low (G),Fence High (G),RMS raw (G),RMS clean (G),Peak raw (G),Peak clean (G),Peak-to-Peak (G),Std Dev (G),CF raw,CF clean,Kurtosis raw,Kurtosis clean,Skewness,Fs (Hz),dt (ms),Duration (ms),ISO Zone,Zone Description
-Jun-24,28-Jun-24 09:15:08,Jockey Pump,B-JP-01   -M1A  -->  Motor Outboard Axial,2047,3,1,2044,-1.78638,1.82262,0.61833,0.58468,9.1,1.497,2.741,0.58468,14.717,2.5604,21.6061,-0.8419,-0.171,2500.0,0.4,798.428,B,Unrestricted Operation
-Sep-24,04-Sep-24 10:53:11,Jockey Pump,B-JP-01   -M1A  -->  Motor Outboard Axial,2048,3,29,2045,-1.185,1.215,0.46911,0.45183,1.531,1.2,2.38,0.45179,3.2636,2.6559,0.1958,-0.184,-0.127,2500.0,0.4,798.428,B,Unrestricted Operation
-Oct-24,16-Oct-24 11:46:26,Jockey Pump,B-JP-01   -M2A  -->  Motor Inboard Axial,2048,3,27,2045,-1.2315,1.1645,0.48336,0.4648,1.699,1.224,2.385,0.46472,3.515,2.6334,0.0785,-0.2618,0.3328,2500.0,0.4,798.428,B,Unrestricted Operation
+Period,Date/Time,Equipment,Meas. Point,N Raw,Startup Trimmed,Spikes Removed,N Clean,Fence Low (G),Fence High (G),RMS raw (G),RMS clean (G),Peak raw (G),Peak clean (G),RMS (mm/s),Peak (mm/s),Peak (in/s),CF raw,CF clean,Kurtosis raw,Kurtosis clean,Skewness,Fs (Hz),dt (ms),Duration (ms),ISO Zone (vel),Zone Description,ISO Zone (CF proxy)
+Jun-24,28-Jun-24 09:15:08,Jockey Pump,B-JP-01   -M1A  -->  Motor Outboard Axial,2047,3,1,2044,-1.78638,1.82262,0.61833,0.58468,9.1,1.497,8.1741,28.9069,1.138069,14.717,2.5604,21.6061,-0.8419,-0.171,2500.0,0.4,798.428,E,DAMAGE OCCURS — Stop Immediately,C
+Sep-24,04-Sep-24 10:53:11,Jockey Pump,B-JP-01   -M1A  -->  Motor Outboard Axial,2048,3,29,2045,-1.185,1.215,0.46911,0.45183,1.531,1.2,5.4627,16.5966,0.653412,3.2636,2.6559,0.1958,-0.184,-0.127,2500.0,0.4,798.428,E,DAMAGE OCCURS — Stop Immediately,C
+Oct-24,16-Oct-24 11:46:26,Jockey Pump,B-JP-01   -M2A  -->  Motor Inboard Axial,2048,3,27,2045,-1.2315,1.1645,0.48336,0.4648,1.699,1.224,5.6333,17.413,0.685552,3.515,2.6334,0.0785,-0.2618,0.3328,2500.0,0.4,798.428,E,DAMAGE OCCURS — Stop Immediately,C
 
 === 2. TREND ===
-Parameter,Jun-24,Sep-24,Oct-24,Delta (first→last),Delta % (first→last),Flag
-RMS (G),0.5847,0.4518,0.4648,-0.11988,-20.5,
-Peak (G),1.497,1.2,1.224,-0.273,-18.24,
-P2P (G),2.741,2.38,2.385,-0.356,-12.99,
-Std Dev (G),0.5847,0.4518,0.4647,-0.11996,-20.52,
-Crest Factor,2.5604,2.6559,2.6334,0.07301,2.85,
-Kurtosis,-0.8419,-0.184,-0.2618,0.58009,68.91,
-Skewness,-0.171,-0.127,0.3328,0.50377,294.63,
+Parameter,Unit,Jun-24,Sep-24,Oct-24,Delta (first→last),Delta % (first→last),Flag
+RMS (mm/s),mm/s,8.1741,5.4627,5.6333,-2.54077,-31.08,🔴🔴 Zone E | ⚠ >20%
+Peak (in/s),in/s,1.1381,0.6534,0.6856,-0.45252,-39.76,
+Crest Factor,,2.5604,2.6559,2.6334,0.07301,2.85,
+Kurtosis,,-0.8419,-0.184,-0.2618,0.58009,68.91,
+Skewness,,-0.171,-0.127,0.3328,0.50377,294.63,
 
 === 3. TOP FREQUENCIES ===
 Rank,Jun-24 Freq (Hz),Jun-24 Mag (G),Sep-24 Freq (Hz),Sep-24 Mag (G),Oct-24 Freq (Hz),Oct-24 Mag (G),New in last period
@@ -32,15 +30,15 @@ Rank,Jun-24 Freq (Hz),Jun-24 Mag (G),Sep-24 Freq (Hz),Sep-24 Mag (G),Oct-24 Freq
 8,192.03,0.114652,47.68,0.110341,47.68,0.109885,⚠ New
 
 === 4. OUTLIER DETAIL ===
-Period,Valid,N Raw,Startup Trim,Spikes Removed,N Clean,IQR k,Fence Low,Fence High,Peak Raw (G),Peak After (G),Replace Method
+Period,Valid,N Raw,Startup Trim,Spikes Removed,N Clean,IQR k,Fence Low (G),Fence High (G),Peak Raw (G),Peak After (G),Replace Method
 Jun-24,Yes,2047,3,1,2044,1.5,-1.78638,1.82262,9.1,1.497,interpolate
 Sep-24,Yes,2048,3,29,2045,1.5,-1.185,1.215,1.531,1.2,interpolate
 Oct-24,Yes,2048,3,27,2045,1.5,-1.2315,1.1645,1.699,1.224,interpolate
 
 === 5. NEXT PERIOD FORECAST ===
 Parameter,Unit,Jun-24,Sep-24,Oct-24,Next Period (Predicted),Δ vs Last Period,Δ% vs Last Period,Trend,Risk Indicator
-RMS (G),G,0.5847,0.4518,0.4648,0.3805590673576132,-0.08424346408683131,-18.1245708419513,↓,
-Peak (G),G,1.497,1.2,1.224,1.0340000000000003,-0.18999999999999972,-15.522875816993443,↓,
-Crest Factor,,2.5604,2.6559,2.6334,2.6895439757722297,0.05616761227387723,2.132912448536617,↑,✅ Zone A/B
-Kurtosis,,-0.8419,-0.184,-0.2618,0.1508853820969277,0.4126580174123783,157.63986060464356,↑,
+RMS (mm/s),mm/s,8.1741,5.4627,5.6333,3.8826,-1.7507,-31.08,↓,🔴 Zone D
+Peak (in/s),in/s,1.1381,0.6534,0.6856,0.3732,-0.3124,-45.57,↓,🔴 >0.25 in/s (Zone D)
+Crest Factor,,2.5604,2.6559,2.6334,2.6895,0.0562,2.13,↑,✅ Zone A/B
+Kurtosis,,-0.8419,-0.184,-0.2618,0.1509,0.4127,157.64,↑,
 

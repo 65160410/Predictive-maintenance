@@ -5,20 +5,18 @@ Sep-24,A_CH-06 A_NAA_1490__Sep24.txt,Yes,0.648,2.8313,-0.3426,0.0037,0.86,
 Oct-24,A_CH-06 A_NAA_1490__Oct24.txt,Yes,0.661,2.7538,-0.272,0.0029,1.32,
 
 === 1. VIBRATION METRICS ===
-Period,Date/Time,Equipment,Meas. Point,N Raw,Startup Trimmed,Spikes Removed,N Clean,Fence Low (G),Fence High (G),RMS raw (G),RMS clean (G),Peak raw (G),Peak clean (G),Peak-to-Peak (G),Std Dev (G),CF raw,CF clean,Kurtosis raw,Kurtosis clean,Skewness,Fs (Hz),dt (ms),Duration (ms),ISO Zone,Zone Description
-Jun-24,28-Jun-24 08:56:47,Motor Compressor OAH-06_A,CH-06-A   -NAA  -->  Motor Outboard Axials,4096,8,27,4088,-0.70912,0.70387,0.27921,0.25647,5.9,0.703,1.401,0.25647,21.1307,2.741,47.9729,-0.2493,0.0386,10000.0,0.1,532.158,B,Unrestricted Operation
-Sep-24,04-Sep-24 10:26:52,(CHPP) Motor Compressor CH-06_A,CH-06-A   -NAA  -->  Motor Outboard Axial,4091,10,25,4081,-0.6485,0.6515,10.52473,0.22887,525.0,0.648,1.294,0.22887,49.8825,2.8313,2134.2915,-0.3426,-0.0065,10000.0,0.1,532.158,B,Unrestricted Operation
-Oct-24,16-Oct-24 12:12:21,Motor Compressor OAH-06_A,CH-06-A   -NAA  -->  Motor Outboard Axial,4096,8,46,4088,-0.666,0.662,0.25326,0.24003,1.086,0.661,1.308,0.24003,4.288,2.7538,0.2128,-0.272,-0.0135,10000.0,0.1,532.158,B,Unrestricted Operation
+Period,Date/Time,Equipment,Meas. Point,N Raw,Startup Trimmed,Spikes Removed,N Clean,Fence Low (G),Fence High (G),RMS raw (G),RMS clean (G),Peak raw (G),Peak clean (G),RMS (mm/s),Peak (mm/s),Peak (in/s),CF raw,CF clean,Kurtosis raw,Kurtosis clean,Skewness,Fs (Hz),dt (ms),Duration (ms),ISO Zone (vel),Zone Description,ISO Zone (CF proxy)
+Jun-24,28-Jun-24 08:56:47,Motor Compressor OAH-06_A,CH-06-A   -NAA  -->  Motor Outboard Axials,4096,8,27,4088,-0.70912,0.70387,0.27921,0.25647,5.9,0.703,1.2155,3.4237,0.13479,21.1307,2.741,47.9729,-0.2493,0.0386,10000.0,0.1,532.158,B,Unrestricted Operation,C
+Sep-24,04-Sep-24 10:26:52,(CHPP) Motor Compressor CH-06_A,CH-06-A   -NAA  -->  Motor Outboard Axial,4091,10,25,4081,-0.6485,0.6515,10.52473,0.22887,525.0,0.648,0.8336,3.0252,0.119102,49.8825,2.8313,2134.2915,-0.3426,-0.0065,10000.0,0.1,532.158,B,Unrestricted Operation,D
+Oct-24,16-Oct-24 12:12:21,Motor Compressor OAH-06_A,CH-06-A   -NAA  -->  Motor Outboard Axial,4096,8,46,4088,-0.666,0.662,0.25326,0.24003,1.086,0.661,0.9622,3.1934,0.125723,4.288,2.7538,0.2128,-0.272,-0.0135,10000.0,0.1,532.158,B,Unrestricted Operation,C
 
 === 2. TREND ===
-Parameter,Jun-24,Sep-24,Oct-24,Delta (first→last),Delta % (first→last),Flag
-RMS (G),0.2565,0.2289,0.24,-0.01644,-6.41,
-Peak (G),0.703,0.648,0.661,-0.042,-5.97,
-P2P (G),1.401,1.294,1.308,-0.093,-6.64,
-Std Dev (G),0.2565,0.2289,0.24,-0.01645,-6.41,
-Crest Factor,2.741,2.8313,2.7538,0.01275,0.47,
-Kurtosis,-0.2493,-0.3426,-0.272,-0.02271,-9.11,
-Skewness,0.0386,-0.0065,-0.0135,-0.05215,-135.07,
+Parameter,Unit,Jun-24,Sep-24,Oct-24,Delta (first→last),Delta % (first→last),Flag
+RMS (mm/s),mm/s,1.2155,0.8336,0.9622,-0.25332,-20.84,✅ Zone B | ⚠ >20%
+Peak (in/s),in/s,0.1348,0.1191,0.1257,-0.00907,-6.73,
+Crest Factor,,2.741,2.8313,2.7538,0.01275,0.47,
+Kurtosis,,-0.2493,-0.3426,-0.272,-0.02271,-9.11,
+Skewness,,0.0386,-0.0065,-0.0135,-0.05215,-135.07,
 
 === 3. TOP FREQUENCIES ===
 Rank,Jun-24 Freq (Hz),Jun-24 Mag (G),Sep-24 Freq (Hz),Sep-24 Mag (G),Oct-24 Freq (Hz),Oct-24 Mag (G),New in last period
@@ -32,15 +30,15 @@ Rank,Jun-24 Freq (Hz),Jun-24 Mag (G),Sep-24 Freq (Hz),Sep-24 Mag (G),Oct-24 Freq
 8,3101.76,0.039239,3085.03,0.048009,2994.13,0.048668,⚠ New
 
 === 4. OUTLIER DETAIL ===
-Period,Valid,N Raw,Startup Trim,Spikes Removed,N Clean,IQR k,Fence Low,Fence High,Peak Raw (G),Peak After (G),Replace Method
+Period,Valid,N Raw,Startup Trim,Spikes Removed,N Clean,IQR k,Fence Low (G),Fence High (G),Peak Raw (G),Peak After (G),Replace Method
 Jun-24,Yes,4096,8,27,4088,1.5,-0.70912,0.70387,5.9,0.703,interpolate
 Sep-24,Yes,4091,10,25,4081,1.5,-0.6485,0.6515,525.0,0.648,interpolate
 Oct-24,Yes,4096,8,46,4088,1.5,-0.666,0.662,1.086,0.661,interpolate
 
 === 5. NEXT PERIOD FORECAST ===
 Parameter,Unit,Jun-24,Sep-24,Oct-24,Next Period (Predicted),Δ vs Last Period,Δ% vs Last Period,Trend,Risk Indicator
-RMS (G),G,0.2565,0.2289,0.24,0.22535423803749496,-0.014679721196899087,-6.1156851487685895,↓,
-Peak (G),G,0.703,0.648,0.661,0.6286666666666667,-0.032333333333333325,-4.891578416540594,↓,
-Crest Factor,,2.741,2.8313,2.7538,2.7881050886485603,0.03432807264504101,1.2465814205559895,↑,✅ Zone A/B
-Kurtosis,,-0.2493,-0.3426,-0.272,-0.3106625855849807,-0.038650279878801985,-14.209018881870406,↓,
+RMS (mm/s),mm/s,1.2155,0.8336,0.9622,0.7504,-0.2117,-22.01,↓,✅ Zone B
+Peak (in/s),in/s,0.1348,0.1191,0.1257,0.1175,-0.0083,-6.56,↓,✅ ≤0.25 in/s
+Crest Factor,,2.741,2.8313,2.7538,2.7881,0.0343,1.25,↑,✅ Zone A/B
+Kurtosis,,-0.2493,-0.3426,-0.272,-0.3107,-0.0387,-14.21,↓,
 

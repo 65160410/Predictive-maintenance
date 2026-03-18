@@ -5,20 +5,18 @@ Sep-24,A_Cooling Pump OAH 02_M1H_1480_Sep24.txt,Yes,1.298,1.9968,-1.2539,0.0,0.1
 Oct-24,A_Cooling Pump OAH 02_M1H_1480_Oct24.txt,Yes,1.311,2.213,-1.1544,0.0005,0.07,
 
 === 1. VIBRATION METRICS ===
-Period,Date/Time,Equipment,Meas. Point,N Raw,Startup Trimmed,Spikes Removed,N Clean,Fence Low (G),Fence High (G),RMS raw (G),RMS clean (G),Peak raw (G),Peak clean (G),Peak-to-Peak (G),Std Dev (G),CF raw,CF clean,Kurtosis raw,Kurtosis clean,Skewness,Fs (Hz),dt (ms),Duration (ms),ISO Zone,Zone Description
-Jun-24,28-Jun-24 08:19:52,(CHPP) Cooling Pump for OAH-02,2-COP-02  -M1H  -->  Motor Outboard Horizontal,4095,4,1,4091,-1.8265,1.8575,20.26151,0.53866,1296.1,1.179,2.349,0.53866,63.9686,2.1888,4083.9599,-1.1418,-0.0788,2500.0,0.4,1598.428,A,Newly Commissioned / Good
-Sep-24,28-Jun-24 08:19:52,(CHPP) Cooling Pump for ECH-02,2-COP-02  -M1H  -->  Motor Outboard Horizontal,4097,4,1,4093,-2.3305,2.3535,20.25989,0.65005,1296.1,1.298,2.498,0.65005,63.9737,1.9968,4083.2729,-1.2539,-0.0809,2500.0,0.4,1598.428,A,Newly Commissioned / Good
-Oct-24,16-Oct-24 10:53:12,Cooling Pump for OAH-02,2-COP-02  -M1H  -->  Motor Outboard Horizontal,4096,3,0,4093,-2.071,2.097,0.59237,0.5924,1.311,1.311,2.453,0.5924,2.2131,2.213,-1.1545,-1.1544,-0.0801,2500.0,0.4,1598.428,A,Newly Commissioned / Good
+Period,Date/Time,Equipment,Meas. Point,N Raw,Startup Trimmed,Spikes Removed,N Clean,Fence Low (G),Fence High (G),RMS raw (G),RMS clean (G),Peak raw (G),Peak clean (G),RMS (mm/s),Peak (mm/s),Peak (in/s),CF raw,CF clean,Kurtosis raw,Kurtosis clean,Skewness,Fs (Hz),dt (ms),Duration (ms),ISO Zone (vel),Zone Description,ISO Zone (CF proxy)
+Jun-24,28-Jun-24 08:19:52,(CHPP) Cooling Pump for OAH-02,2-COP-02  -M1H  -->  Motor Outboard Horizontal,4095,4,1,4091,-1.8265,1.8575,20.26151,0.53866,1296.1,1.179,2.8412,8.503,0.334764,63.9686,2.1888,4083.9599,-1.1418,-0.0788,2500.0,0.4,1598.428,D,Damage Risk — Act Immediately,C
+Sep-24,28-Jun-24 08:19:52,(CHPP) Cooling Pump for ECH-02,2-COP-02  -M1H  -->  Motor Outboard Horizontal,4097,4,1,4093,-2.3305,2.3535,20.25989,0.65005,1296.1,1.298,2.9936,8.1137,0.319436,63.9737,1.9968,4083.2729,-1.2539,-0.0809,2500.0,0.4,1598.428,D,Damage Risk — Act Immediately,C
+Oct-24,16-Oct-24 10:53:12,Cooling Pump for OAH-02,2-COP-02  -M1H  -->  Motor Outboard Horizontal,4096,3,0,4093,-2.071,2.097,0.59237,0.5924,1.311,1.311,2.9721,9.3133,0.366665,2.2131,2.213,-1.1545,-1.1544,-0.0801,2500.0,0.4,1598.428,D,Damage Risk — Act Immediately,C
 
 === 2. TREND ===
-Parameter,Jun-24,Sep-24,Oct-24,Delta (first→last),Delta % (first→last),Flag
-RMS (G),0.5387,0.6501,0.5924,0.05375,9.98,
-Peak (G),1.179,1.298,1.311,0.132,11.2,
-P2P (G),2.349,2.498,2.453,0.104,4.43,
-Std Dev (G),0.5387,0.6501,0.5924,0.05375,9.98,
-Crest Factor,2.1888,1.9968,2.213,0.02425,1.11,
-Kurtosis,-1.1418,-1.2539,-1.1544,-0.01262,-1.11,
-Skewness,-0.0788,-0.0809,-0.0801,-0.00129,-1.63,
+Parameter,Unit,Jun-24,Sep-24,Oct-24,Delta (first→last),Delta % (first→last),Flag
+RMS (mm/s),mm/s,2.8412,2.9936,2.9721,0.1309,4.61,🔴 Zone D
+Peak (in/s),in/s,0.3348,0.3194,0.3667,0.0319,9.53,
+Crest Factor,,2.1888,1.9968,2.213,0.02425,1.11,
+Kurtosis,,-1.1418,-1.2539,-1.1544,-0.01262,-1.11,
+Skewness,,-0.0788,-0.0809,-0.0801,-0.00129,-1.63,
 
 === 3. TOP FREQUENCIES ===
 Rank,Jun-24 Freq (Hz),Jun-24 Mag (G),Sep-24 Freq (Hz),Sep-24 Mag (G),Oct-24 Freq (Hz),Oct-24 Mag (G),New in last period
@@ -32,15 +30,15 @@ Rank,Jun-24 Freq (Hz),Jun-24 Mag (G),Sep-24 Freq (Hz),Sep-24 Mag (G),Oct-24 Freq
 8,1213.03,0.086949,821.52,0.067839,1112.26,0.075227,
 
 === 4. OUTLIER DETAIL ===
-Period,Valid,N Raw,Startup Trim,Spikes Removed,N Clean,IQR k,Fence Low,Fence High,Peak Raw (G),Peak After (G),Replace Method
+Period,Valid,N Raw,Startup Trim,Spikes Removed,N Clean,IQR k,Fence Low (G),Fence High (G),Peak Raw (G),Peak After (G),Replace Method
 Jun-24,Yes,4095,4,1,4091,1.5,-1.8265,1.8575,1296.1,1.179,interpolate
 Sep-24,Yes,4097,4,1,4093,1.5,-2.3305,2.3535,1296.1,1.298,interpolate
 Oct-24,Yes,4096,3,0,4093,1.5,-2.071,2.097,1.311,1.311,interpolate
 
 === 5. NEXT PERIOD FORECAST ===
 Parameter,Unit,Jun-24,Sep-24,Oct-24,Next Period (Predicted),Δ vs Last Period,Δ% vs Last Period,Trend,Risk Indicator
-RMS (G),G,0.5387,0.6501,0.5924,0.6474506052158207,0.05504627220099767,9.292010394464876,↑,
-Peak (G),G,1.179,1.298,1.311,1.3946666666666667,0.08366666666666678,6.381896770912798,↑,
-Crest Factor,,2.1888,1.9968,2.213,2.157095214599296,-0.055920333967254265,-2.5268839165398487,↓,✅ Zone A/B
-Kurtosis,,-1.1418,-1.2539,-1.1544,-1.195964190746778,-0.04157459157426535,-3.6014350444656444,↓,
+RMS (mm/s),mm/s,2.8412,2.9936,2.9721,3.0665,0.0944,3.18,↑,🔴 Zone D
+Peak (in/s),in/s,0.3348,0.3194,0.3667,0.3722,0.0055,1.51,↑,🔴 >0.25 in/s (Zone D)
+Crest Factor,,2.1888,1.9968,2.213,2.1571,-0.0559,-2.53,↓,✅ Zone A/B
+Kurtosis,,-1.1418,-1.2539,-1.1544,-1.196,-0.0416,-3.6,↓,
 
